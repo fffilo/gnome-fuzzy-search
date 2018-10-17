@@ -1,7 +1,7 @@
 INSTALL_PATH = ~/.local/share/gnome-shell/extensions
 INSTALL_NAME = gnome-fuzzy-search@gnome-shell-exstensions.fffilo.github.com
 BUILD_DIR = _build
-FILES = applicationsSearchProvider.js, applicationsUtils.js, calculatorSearchProvider.js, calendarSearchProvider.js, contactsSearchProvider.js, controlCenterSearchProvider.js, convenience.js, documentsSearchProvider.js, extension.js, metadata.json, nautilusSearchProvider.js, photosSearchProvider.js, prefs.css, prefs.js, providers.js, README.md, schemas/, screenshot_after.png, screenshot_before.png, screenshot_settings.png, seahorseSearchProvider.js, settings.js, softwareSearchProvider.js, stylesheet.css, terminalSearchProvider.js, translation.js
+FILES = applicationsSearchProvider.js applicationsUtils.js calculatorSearchProvider.js calendarSearchProvider.js contactsSearchProvider.js controlCenterSearchProvider.js convenience.js documentsSearchProvider.js extension.js metadata.json nautilusSearchProvider.js photosSearchProvider.js prefs.css prefs.js providers.js README.md schemas/ screenshot_after.png screenshot_before.png screenshot_settings.png seahorseSearchProvider.js settings.js softwareSearchProvider.js stylesheet.css terminalSearchProvider.js translation.js
 
 install: build
 	rm -rf $(INSTALL_PATH)/$(INSTALL_NAME)
