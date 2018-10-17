@@ -1,0 +1,16 @@
+{
+    "description": "Append fuzzy search results to Gnome Search",
+    "description-html": "Append <a href=\"https://en.wikipedia.org/wiki/Approximate_string_matching\">fuzzy search</a> results to <a href=\"https://developer.gnome.org/SearchProvider/\">Gnome Search</a>.",
+    "email": "fffilo666@gmail.com",
+    "gettext-domain": "gnome-fuzzy-search",
+    "license": "GNU General Public License v3.0",
+    "license-html": "This program comes with ABSOLUTELY NO WARRANTY.\nSee the <a href=\"https:\/\/www.gnu.org\/licenses\/gpl-3.0.html\">GNU General Public License v3.0</a> for details.",
+    "name": "GNOME Fuzzy Search",
+    "original-author": "Franjo Filo <fffilo666@gmail.com>",
+    "original-author-html": "Franjo Filo &lt;<a href=\"mailto:fffilo666@gmail.com\">fffilo666@gmail.com</a>&gt;",
+    "settings-schema": "org.gnome.shell.extensions.gnome-fuzzy-search",
+    "shell-version": ["3.18"],
+    "url": "https://github.com/fffilo/gnome-fuzzy-search",
+    "uuid": "gnome-fuzzy-search@gnome-shell-exstensions.fffilo.github.com",
+    "version": "1"
+}

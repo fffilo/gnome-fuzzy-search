@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-fuzzy-search">
+    <schema path="/org/gnome/shell/extensions/gnome-fuzzy-search/" id="org.gnome.shell.extensions.gnome-fuzzy-search">
+        <key name="applications" type="b">
+            <default>true</default>
+            <summary>Applications</summary>
+        </key>
+        <key name="gnome-calculator" type="b">
+            <default>false</default>
+            <summary>Calculator</summary>
+        </key>
+        <key name="org-gnome-calendar" type="b">
+            <default>false</default>
+            <summary>Calendar</summary>
+        </key>
+        <key name="org-gnome-contacts" type="b">
+            <default>false</default>
+            <summary>Contacts</summary>
+        </key>
+        <key name="gnome-control-center" type="b">
+            <default>false</default>
+            <summary>Control Center</summary>
+        </key>
+        <key name="org-gnome-documents" type="b">
+            <default>false</default>
+            <summary>Documents</summary>
+        </key>
+        <key name="org-gnome-nautilus" type="b">
+            <default>false</default>
+            <summary>Nautilus</summary>
+        </key>
+        <key name="org-gnome-photos" type="b">
+            <default>false</default>
+            <summary>Photos</summary>
+        </key>
+        <key name="seahorse" type="b">
+            <default>false</default>
+            <summary>Seahorse</summary>
+        </key>
+        <key name="org-gnome-software" type="b">
+            <default>false</default>
+            <summary>Software</summary>
+        </key>
+        <key name="gnome-terminal" type="b">
+            <default>false</default>
+            <summary>Terminal</summary>
+        </key>
+    </schema>
+</schemalist>
