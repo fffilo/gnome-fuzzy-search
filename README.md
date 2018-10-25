@@ -25,7 +25,7 @@ _This project is still work in progress, so for now you can only add fuzzy searc
 
 ## Installation
 
-- install using [GNOME Shell extension website](https://extensions.gnome.org/extension/XXX/gnome-fuzzy-search/)
+- install using [GNOME Shell extension website](https://extensions.gnome.org/extension/1488/gnome-fuzzy-search/)
 - build and install from source
     - download source from [GitHub](https://github.com/fffilo/gnome-fuzzy-search) (clone repository or download zip)
     - from `gnome-fuzzy-search` directory execute `make install`
