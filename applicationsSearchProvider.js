@@ -36,7 +36,12 @@ if (_appSearchProvider) {
      * @param  {Gio.Cancellable} cancellable
      * @return {Void}
      */
-    _fuzzyGetInitialResultSet = (terms, callback, cancellable) => {
+    // @todo - this does not work with gnome-shell 3.28
+    // see why scope (this) is wrong
+    //
+    // _fuzzyGetInitialResultSet = (terms, callback, cancellable) => {
+
+    _fuzzyGetInitialResultSet = function(terms, callback, cancellable) {
         let preCallback = (result) => {
             ApplicationsUtils.search(terms.join(' ')).forEach((item) => {
                 if (result.indexOf(item) === -1)

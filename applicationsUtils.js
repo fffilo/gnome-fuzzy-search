@@ -93,11 +93,11 @@ const Cache = new Lang.Class({
     _desktopFileObject: function(path) {
         // @todo - async?
         let dir = Gio.file_new_for_path(path);
-        let children = dir.enumerate_children('*', 0, null, null);
+        let children = dir.enumerate_children('*', 0, null);
         let result = {};
 
         let info;
-        while ((info = children.next_file(null, null)) !== null) {
+        while ((info = children.next_file(null)) !== null) {
             let id = info.get_name();
             if (!id.match(/\.desktop$/))
                 continue;
@@ -108,7 +108,7 @@ const Cache = new Lang.Class({
 
             result[app.get_id()] = app.get_name();
         }
-        children.close(null, null);
+        children.close(null);
 
         return result;
     },
