@@ -36,19 +36,9 @@ const provider = () => {
     }
 }
 
-/**
- * Execute application search
- *
- * @param  {String} query
- * @return {Array}
- */
-const search = (query) => {
-    return _cache.search(query);
-}
+const Search = new Lang.Class({
 
-const Cache = new Lang.Class({
-
-    Name: 'AppUtilsCache',
+    Name: 'AppUtilsSearch',
 
     /**
      * Constructor
@@ -158,7 +148,7 @@ const Cache = new Lang.Class({
     },
 
     /**
-     * Refresh cache (this._data object)
+     * Refresh data
      *
      * @return {Void}
      */
@@ -186,7 +176,7 @@ const Cache = new Lang.Class({
      * @param  {String} query
      * @return {Array}
      */
-    search: function(query) {
+    find: function(query) {
         let pattern = this._regexQuery(query);
         let result = [];
 
@@ -220,4 +210,3 @@ const Cache = new Lang.Class({
     },
 
 });
-const _cache = new Cache();

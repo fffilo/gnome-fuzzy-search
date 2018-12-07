@@ -6,7 +6,7 @@
 // import modules
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const ApplicationsUtils = Me.imports.applicationsUtils;
+const Utils = Me.imports.applicationsUtils;
 
 /**
  * Application search provider instance in
@@ -14,18 +14,27 @@ const ApplicationsUtils = Me.imports.applicationsUtils;
  *
  * @type {AppSearchProvider}
  */
-const _appSearchProvider = ApplicationsUtils.provider();
+let _provider = Utils.provider();
+
+/**
+ * Search instance:
+ * null on fuzzy search disabled,
+ * AppUtilsSearch on enabled
+ *
+ * @type {Mixed}
+ */
+let _search = null;
 
 // getInitialResultSet method in AppSearchProvider
 let _getInitialResultSet, _fuzzyGetInitialResultSet;
-if (_appSearchProvider) {
+if (_provider) {
 
     /**
      * Original getInitialResultSet method
      *
      * @type {Function}
      */
-    _getInitialResultSet = _appSearchProvider.__proto__.getInitialResultSet;
+    _getInitialResultSet = _provider.__proto__.getInitialResultSet;
 
     /**
      * New getInitialResultSet method:
@@ -43,7 +52,7 @@ if (_appSearchProvider) {
 
     _fuzzyGetInitialResultSet = function(terms, callback, cancellable) {
         let preCallback = (result) => {
-            ApplicationsUtils.search(terms.join(' ')).forEach((item) => {
+            _search.find(terms.join(' ')).forEach((item) => {
                 if (result.indexOf(item) === -1)
                     result.push(item);
             });
@@ -85,8 +94,8 @@ const enabled = () => {
  * @return {Boolean}
  */
 const getState = () => {
-    if (_appSearchProvider)
-        return _appSearchProvider.__proto__.getInitialResultSet === _fuzzyGetInitialResultSet;
+    if (_provider)
+        return _provider.__proto__.getInitialResultSet === _fuzzyGetInitialResultSet;
 
     return false;
 }
@@ -98,11 +107,17 @@ const getState = () => {
  * @return {Void}
  */
 const setState = (state) => {
-    if (!_appSearchProvider)
+    if (!_provider)
         return;
 
-    if (!!state)
-        _appSearchProvider.__proto__.getInitialResultSet = _fuzzyGetInitialResultSet;
-    else
-        _appSearchProvider.__proto__.getInitialResultSet = _getInitialResultSet;
+    if (!!state) {
+        _search = new Utils.Search();
+        _provider.__proto__.getInitialResultSet = _fuzzyGetInitialResultSet;
+    }
+    else {
+        _provider.__proto__.getInitialResultSet = _getInitialResultSet;
+        if (_search)
+            _search.destroy();
+        _search = null;
+    }
 }
