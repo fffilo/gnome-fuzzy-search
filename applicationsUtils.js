@@ -4,9 +4,10 @@
 'use strict';
 
 // import modules
+const Mainloop = imports.mainloop;
+const Lang = imports.lang;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 
 /**
  * Get AppSearchProvider from registered
@@ -49,14 +50,45 @@ const Cache = new Lang.Class({
 
     Name: 'AppUtilsCache',
 
+    /**
+     * Constructor
+     *
+     * @return {Void}
+     */
     _init: function() {
+        let dir = [
+            '/usr/share/applications',
+            GLib.get_home_dir() + '/.local/share/applications',
+        ];
+
+        // listen object - file/monitor list
+        this._listen = dir.map((path) => {
+            let file = Gio.File.new_for_path(path);
+            let monitor = file.monitor(Gio.FileMonitorFlags.NONE, null);
+
+            // refresh on each directory change
+            monitor.connect('changed', Lang.bind(this, this._handleMonitorChanged));
+
+            return {
+                file: file,
+                monitor: monitor,
+            }
+        });
+        this._interval = null;
         this._data = {};
-        this._listen = [ '/usr/share/applications', GLib.get_home_dir() + '/.local/share/applications' ];
-        // @todo - set listener to directory and
-        // execute this.refresh on each directory
-        // change
 
         this.refresh();
+    },
+
+    /**
+     * Destructor
+     *
+     * @return {Void}
+     */
+    destroy: function() {
+        this._listen.forEach((item) => {
+            item.monitor.cancel();
+        });
     },
 
     /**
@@ -132,8 +164,8 @@ const Cache = new Lang.Class({
      */
     refresh: function() {
         let desktopFile = [];
-        this._listen.forEach((path) => {
-            desktopFile.push(this._desktopFileObject(path));
+        this._listen.forEach((item) => {
+            desktopFile.push(this._desktopFileObject(item.file.get_path()));
         });
 
         //this._data = Object.assign.apply(Object, desktopFile);
@@ -164,6 +196,27 @@ const Cache = new Lang.Class({
         });
 
         return result;
+    },
+
+    /**
+     * File monitor changed event handler
+     *
+     * @param  {Object} monitor
+     * @param  {Object} file
+     * @param  {Mixed}  otherFile
+     * @param  {Number} eventType
+     * @return {Void}
+     */
+    _handleMonitorChanged: function(monitor, file, otherFile, eventType) {
+        Mainloop.source_remove(this._interval);
+
+        // handle multiple changes as one with delay
+        this._interval = Mainloop.timeout_add(1000, () => {
+            this.refresh();
+
+            this._interval = null;
+            return !!this._interval;
+        }, null);
     },
 
 });
