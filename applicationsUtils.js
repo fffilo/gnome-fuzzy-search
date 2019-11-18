@@ -18,7 +18,7 @@ const Gio = imports.gi.Gio;
  *
  * @return {Mixed}
  */
-const provider = () => {
+var provider = () => {
     try {
         const Main = imports.ui.main;
         const AppDisplay = imports.ui.appDisplay;
@@ -36,7 +36,7 @@ const provider = () => {
     }
 }
 
-const Search = new Lang.Class({
+var Search = new Lang.Class({
 
     Name: 'AppUtilsSearch',
 

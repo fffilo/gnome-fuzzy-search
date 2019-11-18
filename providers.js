@@ -9,7 +9,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 
 // list of all providers
-const All = [
+var ALL = [
     // schema key, provider
     ['applications', 'applicationsSearchProvider'],
     ['gnome-calculator', 'calculatorSearchProvider'],
@@ -30,17 +30,17 @@ const All = [
  *
  * @return {Void}
  */
-const refresh = () => {
+var refresh = () => {
     let settings = Settings.settings();
 
     disable();
-    All.forEach((item) => {
+    ALL.forEach((item) => {
         let key = item[0];
         let name = item[1];
         let provider = Me.imports[name];
+        let state = settings.get_boolean(key);
 
-        global.log("Fuzzy", "refresh", key, settings.get_boolean(key));
-        provider.setState(settings.get_boolean(key));
+        provider.setState(state);
     });
 
     settings.run_dispose();
@@ -51,13 +51,13 @@ const refresh = () => {
  *
  * @type {Void}
  */
-const disable = () => {
-    All.forEach((item) => {
+var disable = () => {
+    ALL.forEach((item) => {
         let key = item[0];
         let name = item[1];
         let provider = Me.imports[name];
+        let state = false;
 
-        global.log("Fuzzy", "disable", key, false);
-        provider.setState(false);
+        provider.setState(state);
     });
 }

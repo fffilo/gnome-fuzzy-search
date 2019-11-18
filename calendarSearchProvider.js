@@ -13,7 +13,7 @@
  *
  * @return {String}
  */
-const description = () => {
+var description = () => {
     return 'Calendar';
 }
 
@@ -23,7 +23,7 @@ const description = () => {
  *
  * @return {Boolean}
  */
-const enabled = () => {
+var enabled = () => {
     return false;
 }
 
@@ -33,7 +33,7 @@ const enabled = () => {
  *
  * @return {Boolean}
  */
-const getState = () => {
+var getState = () => {
     return false;
 }
 
@@ -43,6 +43,6 @@ const getState = () => {
  * @param  {Boolean} state
  * @return {Void}
  */
-const setState = (state) => {
+var setState = (state) => {
     // pass
 }

@@ -14,7 +14,7 @@ const Utils = Me.imports.applicationsUtils;
  *
  * @type {AppSearchProvider}
  */
-let _provider = Utils.provider();
+let provider = Utils.provider();
 
 /**
  * Search instance:
@@ -23,18 +23,18 @@ let _provider = Utils.provider();
  *
  * @type {Mixed}
  */
-let _search = null;
+let search = null;
 
 // getInitialResultSet method in AppSearchProvider
-let _getInitialResultSet, _fuzzyGetInitialResultSet;
-if (_provider) {
+let getInitialResultSet, fuzzyGetInitialResultSet;
+if (provider) {
 
     /**
      * Original getInitialResultSet method
      *
      * @type {Function}
      */
-    _getInitialResultSet = _provider.__proto__.getInitialResultSet;
+    getInitialResultSet = provider.__proto__.getInitialResultSet;
 
     /**
      * New getInitialResultSet method:
@@ -45,14 +45,9 @@ if (_provider) {
      * @param  {Gio.Cancellable} cancellable
      * @return {Void}
      */
-    // @todo - this does not work with gnome-shell 3.28
-    // see why scope (this) is wrong
-    //
-    // _fuzzyGetInitialResultSet = (terms, callback, cancellable) => {
-
-    _fuzzyGetInitialResultSet = function(terms, callback, cancellable) {
-        let preCallback = (result) => {
-            _search.find(terms.join(' ')).forEach((item) => {
+    fuzzyGetInitialResultSet = (terms, callback, cancellable) => {
+        let decorator = (result) => {
+            search.find(terms.join(' ')).forEach((item) => {
                 if (result.indexOf(item) === -1)
                     result.push(item);
             });
@@ -63,7 +58,7 @@ if (_provider) {
         // calling original getInitialResultSet method with
         // our own callback where we'll append new search
         // results before executing original callback
-        _getInitialResultSet.call(this, terms, preCallback, cancellable);
+        getInitialResultSet.call(provider, terms, decorator, cancellable);
     }
 }
 
@@ -73,7 +68,7 @@ if (_provider) {
  *
  * @return {String}
  */
-const description = () => {
+var description = () => {
     return 'Applications';
 }
 
@@ -83,7 +78,7 @@ const description = () => {
  *
  * @return {Boolean}
  */
-const enabled = () => {
+var enabled = () => {
     return true;
 }
 
@@ -93,9 +88,9 @@ const enabled = () => {
  *
  * @return {Boolean}
  */
-const getState = () => {
-    if (_provider)
-        return _provider.__proto__.getInitialResultSet === _fuzzyGetInitialResultSet;
+var getState = () => {
+    if (provider)
+        return provider.__proto__.getInitialResultSet === fuzzyGetInitialResultSet;
 
     return false;
 }
@@ -106,18 +101,18 @@ const getState = () => {
  * @param  {Boolean} state
  * @return {Void}
  */
-const setState = (state) => {
-    if (!_provider)
+var setState = (state) => {
+    if (!provider)
         return;
 
     if (!!state) {
-        _search = new Utils.Search();
-        _provider.__proto__.getInitialResultSet = _fuzzyGetInitialResultSet;
+        search = new Utils.Search();
+        provider.__proto__.getInitialResultSet = fuzzyGetInitialResultSet;
     }
     else {
-        _provider.__proto__.getInitialResultSet = _getInitialResultSet;
-        if (_search)
-            _search.destroy();
-        _search = null;
+        provider.__proto__.getInitialResultSet = getInitialResultSet;
+        if (search)
+            search.destroy();
+        search = null;
     }
 }
