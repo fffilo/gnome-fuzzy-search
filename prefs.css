@@ -1,7 +1,7 @@
-GnomeFuzzySearchPrefsBox { border: none; padding: 0.5em; }
-GnomeFuzzySearchPrefsBox GtkButton { padding: 0.3em 2.41em; }
-
+.gnome-fuzzy-search-prefs-box,
+.gnome-fuzzy-search-prefs-box > border { border: 0 none; }
+.gnome-fuzzy-search-prefs-input { padding: 0.5em; }
 .gnome-fuzzy-search-prefs-page { padding: 2em; }
-.gnome-fuzzy-search-prefs-page-about-title { padding-bottom: 2em; font-weight: bold; }
+.gnome-fuzzy-search-prefs-page-about-title { font-weight: bold; }
 .gnome-fuzzy-search-prefs-page-about-description { padding: 2em; }
 .gnome-fuzzy-search-prefs-page-about-license { font-size: 0.8em; padding-top: 2em; }

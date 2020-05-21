@@ -1,7 +1,6 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 
 // import modules
-const Lang = imports.lang;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Gdk = imports.gi.Gdk;
@@ -54,15 +53,15 @@ const Widget = new GObject.Class({
         this.parent();
 
         this.settings = Settings.settings();
-        //this.settings.connect('changed', Lang.bind(this, this._handleSettings));
+        //this.settings.connect('changed', this._handleSettings.bind(this));
 
         let css = new Gtk.CssProvider();
         css.load_from_path(Me.path + '/prefs.css');
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
         let notebook = new Gtk.Notebook();
-        notebook.append_page(this._pageSettings(), new Gtk.Label({ label: _("Settings"), }));
-        notebook.append_page(this._pageAbout(), new Gtk.Label({ label: _("About"), }));
+        notebook.append_page(this._pageSettings(), new Label({ label: _("Settings"), }));
+        notebook.append_page(this._pageAbout(), new Label({ label: _("About"), }));
         this.add(notebook);
 
         this.show_all();
@@ -100,21 +99,19 @@ const Widget = new GObject.Class({
         let page = this._page();
         page.get_style_context().add_class('gnome-fuzzy-search-prefs-page-settings');
 
-        Providers.All.forEach(function(item) {
-            let key = item[0];
-            let name = item[1];
-            let provider = Me.imports[name];
+        Providers.ALL.forEach(function(item) {
+            let key = item[0],
+                name = item[1],
+                provider = Me.imports[name],
+                value = this.settings.get_boolean(key),
+                desc = _(provider.description()),
+                sensitive = provider.enabled(),
+                input = new InputSwitch(key, value, desc, desc);
 
-            let value = this.settings.get_boolean(key);
-            let box = new Box();
-            let label = new Gtk.Label({ label: _(provider.description()), xalign: 0, tooltip_text: '' });
-            let input = new Gtk.Switch({ active: value, sensitive: provider.enabled() });
+            input.set_sensitive(sensitive);
+            input.connect('changed', this._handleInputChange.bind(this));
 
-            input.connect('notify::active', Lang.bind(this, this._handleInputChange, key));
-            box.actor.set_orientation(Gtk.Orientation.HORIZONTAL);
-            box.actor.pack_start(label, true, true, 0);
-            box.actor.add(input);
-            page.actor.add(box);
+            page.actor.add(input);
         }.bind(this));
 
         return page;
@@ -169,8 +166,10 @@ const Widget = new GObject.Class({
      * @param  {Object} event
      * @return {Void}
      */
-    _handleInputChange: function(actor, event, key) {
-        this.settings.set_boolean(key, actor.active);
+    _handleInputChange: function(actor, event) {
+        let old = this.settings['get_' + event.type](event.key);
+        if (old != event.value)
+            this.settings['set_' + event.type](event.key, event.value);
     },
 
 });
@@ -199,6 +198,8 @@ const Box = new GObject.Class({
 
         this.actor = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, });
         this.add(this.actor);
+
+        this.get_style_context().add_class('gnome-fuzzy-search-prefs-box');
     },
 
     /* --- */
@@ -229,15 +230,194 @@ const Label = new GObject.Class({
      */
     _init: function(options) {
         let o = options || {};
-        if (!('label' in options)) o.label = 'undefined';
+        if (!('label' in options))
+            o.label = 'undefined';
 
         this.parent(o);
         this.set_markup(this.get_text());
         this.set_line_wrap(true);
         this.set_justify(Gtk.Justification.CENTER);
+
+        this.get_style_context().add_class('gnome-fuzzy-search-prefs-label');
     },
 
     /* --- */
 
 });
 
+/**
+ * Input constructor
+ * extends Box
+ *
+ * horizontal Gtk.Box object with label
+ * and widget for editing settings
+ *
+ * @param  {Object}
+ * @return {Object}
+ */
+const Input = new GObject.Class({
+
+    Name: 'Prefs.Input',
+    GTypeName: 'GnomeFuzzySearchPrefsInput',
+    Extends: Box,
+    Signals: {
+        changed: {
+            param_types: [ GObject.TYPE_OBJECT ],
+        },
+    },
+
+    /**
+     * Constructor
+     *
+     * @param  {String} key
+     * @param  {String} text
+     * @param  {String} tooltip
+     * @return {Void}
+     */
+    _init: function(key, text, tooltip) {
+        this.parent();
+        this.actor.set_orientation(Gtk.Orientation.HORIZONTAL);
+
+        this._key = key;
+        this._label = new Gtk.Label({ label: text, xalign: 0, tooltip_text: tooltip || '' });
+        this._widget = null;
+
+        this.actor.pack_start(this._label, true, true, 0);
+
+        this.get_style_context().add_class('gnome-fuzzy-search-prefs-input');
+    },
+
+    /**
+     * Input change event handler
+     *
+     * @param  {Object} widget
+     * @return {Void}
+     */
+    _handleChange: function(widget) {
+        let emit = new GObject.Object();
+        emit.key = this.key;
+        emit.value = this.value;
+        emit.type = this.type;
+
+        this.emit('changed', emit);
+    },
+
+    /**
+     * Type getter
+     *
+     * @return {String}
+     */
+    get type() {
+        return 'variant';
+    },
+
+    /**
+     * Key getter
+     *
+     * @return {String}
+     */
+    get key() {
+        return this._key;
+    },
+
+    /**
+     * Enabled getter
+     *
+     * @return {Boolean}
+     */
+    get enabled() {
+        return this._widget.is_sensitive();
+    },
+
+    /**
+     * Enabled setter
+     *
+     * @param  {Boolean} value
+     * @return {Void}
+     */
+    set enabled(value) {
+        this._widget.set_sensitive(value);
+    },
+
+    /**
+     * Value getter
+     *
+     * @return {Boolean}
+     */
+    get value() {
+        return this._widget.value;
+    },
+
+    /**
+     * Value setter
+     *
+     * @param  {Mixed} value
+     * @return {Void}
+     */
+    set value(value) {
+        this._widget.value = value;
+    },
+
+    /* --- */
+
+});
+
+/**
+ * InputSwitch constructor
+ * extends Input
+ *
+ * @param  {Object}
+ * @return {Object}
+ */
+const InputSwitch = new GObject.Class({
+
+    Name: 'Prefs.InputSwitch',
+    GTypeName: 'GnomeFuzzySearchPrefsInputSwitch',
+    Extends: Input,
+
+    /**
+     * Constructor
+     *
+     * @return {Void}
+     */
+    _init: function(key, value, text, tooltip) {
+        this.parent(key, text, tooltip);
+
+        this._widget = new Gtk.Switch({ active: value });
+        this._widget.connect('notify::active', this._handleChange.bind(this));
+        this.actor.add(this._widget);
+
+        this.get_style_context().add_class('gnome-fuzzy-search-prefs-input-switch');
+    },
+
+    /**
+     * Type getter
+     *
+     * @return {String}
+     */
+    get type() {
+        return 'boolean';
+    },
+
+    /**
+     * Value getter
+     *
+     * @return {Boolean}
+     */
+    get value() {
+        return this._widget.active;
+    },
+
+    /**
+     * Value setter
+     *
+     * @param  {Boolean} value
+     * @return {Void}
+     */
+    set value(value) {
+        this._widget.active = value;
+    },
+
+    /* --- */
+
+});
