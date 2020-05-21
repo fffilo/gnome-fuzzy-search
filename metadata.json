@@ -9,8 +9,8 @@
     "original-author": "Franjo Filo <fffilo666@gmail.com>",
     "original-author-html": "Franjo Filo &lt;<a href=\"mailto:fffilo666@gmail.com\">fffilo666@gmail.com</a>&gt;",
     "settings-schema": "org.gnome.shell.extensions.gnome-fuzzy-search",
-    "shell-version": ["3.18", "3.20", "3.22", "3.24", "3.26", "3.28"],
+    "shell-version": ["3.18", "3.20", "3.22", "3.24", "3.26", "3.28", "3.30", "3.32", "3.34", "3.36"],
     "url": "https://github.com/fffilo/gnome-fuzzy-search",
     "uuid": "gnome-fuzzy-search@gnome-shell-exstensions.fffilo.github.com",
-    "version": "2"
+    "version": "3"
 }
